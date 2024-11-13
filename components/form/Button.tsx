@@ -5,13 +5,22 @@ type ButtonProps = PressableProps & {
   title: string;
   onPress: () => void;
   className?: PressableProps["className"];
+  type?: "outline" | "filled";
 };
 
 const Button = forwardRef(
-  ({ title, onPress, className, ...rest }: ButtonProps, ref) => {
+  (
+    { title, onPress, className, type = "filled", ...rest }: ButtonProps,
+    ref
+  ) => {
+    const style = {
+      outline: "bg-transparent border border-primary",
+      filled: "bg-primary",
+    };
+
     return (
       <Pressable
-        className={`bg-blue-500 text-white rounded h-12 px-2 flex justify-center items-center mb-4 ${className}`}
+        className={`${style[type]} text-white rounded h-12 px-2 flex justify-center items-center mb-4 ${className}`}
         onPress={onPress}
         {...rest}
       >
