@@ -9,6 +9,7 @@ type InputProps = TextInputProps & {
   errorMessage?: FieldError | undefined;
   type?: "text" | "password";
   rightIcon?: React.ReactNode;
+  onChange?: (text: string) => void;
 };
 
 const Input = forwardRef<TextInput, InputProps>(
@@ -28,6 +29,7 @@ const Input = forwardRef<TextInput, InputProps>(
             placeholderTextColor={"#d1d5db"}
             secureTextEntry={!isPasswordVisible}
             ref={ref}
+            onChangeText={rest.onChange}
             {...rest}
           />
           {rightIcon && (
