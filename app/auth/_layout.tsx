@@ -1,11 +1,16 @@
-import { Stack } from "expo-router";
+import { Redirect, Stack } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 import Logo from "@/assets/images/logo.svg";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function AuthLayout() {
-  const [current, setCurrent] = useState<"login" | "register">("login");
+  const { isAuthenticated } = useAuth();
+
+  if (isAuthenticated) {
+    return <Redirect href="/" />;
+  }
 
   return (
     <>
@@ -24,18 +29,8 @@ export default function AuthLayout() {
           animation: "fade_from_bottom",
         }}
       >
-        <Stack.Screen
-          listeners={{
-            focus: () => setCurrent("login"),
-          }}
-          name="login"
-        />
-        <Stack.Screen
-          listeners={{
-            focus: () => setCurrent("register"),
-          }}
-          name="register"
-        />
+        <Stack.Screen name="login" />
+        <Stack.Screen name="register" />
       </Stack>
     </>
   );

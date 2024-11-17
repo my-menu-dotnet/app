@@ -1,10 +1,15 @@
 import Button from "@/components/form/Button";
 import Input from "@/components/form/Input";
+import api from "@/services/api";
+import { ErrorReponse } from "@/types/error";
 import yup from "@/validator/yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Link } from "expo-router";
+import { useMutation } from "@tanstack/react-query";
+import { AxiosError } from "axios";
+import { Link, router } from "expo-router";
 import { Controller, useForm } from "react-hook-form";
 import { Text, View } from "react-native";
+import Toast from "react-native-toast-message";
 
 type RegisterFormInputs = {
   email: string;
@@ -35,8 +40,27 @@ export default function Page() {
     resolver: yupResolver(schema),
   });
 
+  const { mutate, isPending } = useMutation({
+    mutationFn: (data: RegisterFormInputs) => api.post("/auth/register", data),
+    onSuccess: () => {
+      Toast.show({
+        type: "success",
+        text1: "Cadastro realizado com sucesso",
+        text2: "Faça login para acessar sua conta",
+      });
+      router.push("/auth/login");
+    },
+    onError: (error: AxiosError<ErrorReponse>) => {
+      Toast.show({
+        type: "error",
+        text1: "Erro ao fazer login",
+        text2: error.response?.data?.message ?? "",
+      });
+    },
+  });
+
   const onSubmit = (data: RegisterFormInputs) => {
-    console.log(data);
+    mutate(data);
   };
 
   return (
@@ -100,7 +124,11 @@ export default function Page() {
           )}
         />
 
-        <Button title="Registrar" onPress={handleSubmit(onSubmit)} />
+        <Button
+          title="Registrar"
+          loading={isPending}
+          onPress={handleSubmit(onSubmit)}
+        />
       </View>
 
       <View className="mb-6 items-center">

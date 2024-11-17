@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import Input from "@/components/form/Input";
 import { Link } from "expo-router";
 import { Controller, useForm } from "react-hook-form";
-import { Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Button from "@/components/form/Button";
 import yup from "@/validator/yup";
@@ -34,11 +34,27 @@ export default function Page() {
     resolver: yupResolver(schema),
   });
 
-  const { mutate, isPending } = useMutation({
+  const { mutate: login, isPending: isPendingLogin } = useMutation({
     mutationFn: (data: LoginFormInputs) => api.post("/auth/login", data),
     onSuccess: (response) => {
-      const token = response.headers.authorization;
-      setToken(token);
+      const data = response.data;
+      setToken(data.token, data.refresh_token);
+    },
+    onError: (error: AxiosError<ErrorReponse>) => {
+      const response = error.response;
+      Toast.show({
+        type: "error",
+        text1: "Erro ao fazer login",
+        text2: response?.data?.message ?? "",
+      });
+    },
+  });
+
+  const { mutate: guest, isPending: isPendingGuest } = useMutation({
+    mutationFn: () => api.post("/auth/login/anonymous"),
+    onSuccess: (response) => {
+      const data = response.data;
+      setToken(data.token, "");
     },
     onError: (error: AxiosError<ErrorReponse>) => {
       const response = error.response;
@@ -51,7 +67,11 @@ export default function Page() {
   });
 
   const onSubmit = useCallback((data: LoginFormInputs) => {
-    mutate(data);
+    login(data);
+  }, []);
+
+  const onGuestPress = useCallback(() => {
+    guest();
   }, []);
 
   return (
@@ -96,7 +116,7 @@ export default function Page() {
         </View>
 
         <Button
-          disabled={isPending}
+          loading={isPendingLogin || isPendingGuest}
           title="Login"
           onPress={handleSubmit(onSubmit)}
         />
@@ -104,11 +124,9 @@ export default function Page() {
 
       <View className="">
         <View className="mb-6 items-center">
-          <Text className="text-md font-bold text-gray-500">
-            <Link href={"/auth/register"}>
-              <Text className="text-primary">Continuar como convidado</Text>
-            </Link>
-          </Text>
+          <Pressable onPress={onGuestPress}>
+            <Text className="text-primary">Continuar como convidado</Text>
+          </Pressable>
         </View>
 
         <View className="mb-12 items-center">
