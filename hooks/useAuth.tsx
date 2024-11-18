@@ -66,10 +66,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     (async () => {
       try {
         const token = await secureStore.get("refreshToken");
-        if (!token) return;
+        if (!token) {
+          logout();
+          return;
+        }
         await fetchRefreshToken(token);
       } catch (error) {
-        setIsAuthenticated(false);
+        logout();
       }
     })();
   }, []);

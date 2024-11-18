@@ -9,11 +9,15 @@ type InputProps = TextInputProps & {
   errorMessage?: FieldError | undefined;
   type?: "text" | "password";
   rightIcon?: React.ReactNode;
+  leftIcon?: React.ReactNode;
   onChange?: (text: string) => void;
 };
 
 const Input = forwardRef<TextInput, InputProps>(
-  ({ label, errorMessage, type = "text", rightIcon, ...rest }, ref) => {
+  (
+    { label, errorMessage, type = "text", rightIcon, leftIcon, ...rest },
+    ref
+  ) => {
     const isPassword = type === "password";
     const hasError = !!errorMessage;
     const [isPasswordVisible, setIsPasswordVisible] = useState(!isPassword);
@@ -21,11 +25,12 @@ const Input = forwardRef<TextInput, InputProps>(
     return (
       <FormControl errorMessage={errorMessage?.message} label={label}>
         <View
-          className={`relative border rounded-lg px-4 h-14 justify-center
+          className={`relative border rounded-lg px-4 h-12 items-center flex-row
             ${!hasError ? "border-gray-300" : "border-danger"}`}
         >
+          {leftIcon && <View className="mr-2">{leftIcon}</View>}
           <TextInput
-            className="h-full w-full"
+            className="h-full flex-1"
             placeholderTextColor={"#d1d5db"}
             secureTextEntry={!isPasswordVisible}
             ref={ref}
