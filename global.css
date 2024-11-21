@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  .background-item {
+    @apply flex-row items-center bg-gray-100 border border-gray-200 rounded px-2 py-1 gap-1 overflow-hidden;
+  }
+}

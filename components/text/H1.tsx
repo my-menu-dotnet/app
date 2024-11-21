@@ -1,9 +1,13 @@
-import { Text } from "react-native";
+import { Text, TextProps } from "react-native";
 
-type H1Props = {
-  children: string;
+type H1Props = TextProps & {
+  children: React.ReactNode;
 };
 
-export default function H1({ children }: H1Props) {
-  return <Text className="text-lg font-semibold">{children}</Text>;
+export default function H1({ children, className, ...rest }: H1Props) {
+  return (
+    <Text className={`text-lg font-semibold ${className}`} {...rest}>
+      {children}
+    </Text>
+  );
 }

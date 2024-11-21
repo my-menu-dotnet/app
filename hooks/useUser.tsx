@@ -26,7 +26,7 @@ type UserProviderProps = {
 };
 
 export function UserProvider({ children }: UserProviderProps) {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated } = useAuth();
   const { data: user } = useQuery({
     queryKey: ["user"],
     queryFn: async (): Promise<User> => {
